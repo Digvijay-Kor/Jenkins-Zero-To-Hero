@@ -1,10 +1,10 @@
 pipeline {
     agent {
-        docker {
-            image 'abhishekf5/maven-abhishek-docker-agent:v2'
-            args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
-        }
+    docker {
+        image 'maven:3.9.6-eclipse-temurin-17'
+        args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
     }
+}
     stages {
         stage('Checkout') {
             steps {
@@ -13,11 +13,12 @@ pipeline {
             }
         }
         stage('Build and Test') {
-            steps {
-                sh 'ls -ltr'
-                sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
-            }
-        }
+    steps {
+        sh 'ls -ltr'
+        sh 'curl -fsSL https://get.docker.com | sh || true'
+        sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
+    }
+}
         stage('Build Docker Image') {
             steps {
                 sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t digvijaydoc/spring-boot-app:latest .'
